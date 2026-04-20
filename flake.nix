@@ -8,8 +8,19 @@
   outputs = { self, nixpkgs, flake-utils, ratpac-nix, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        pkgs = import nixpkgs { inherit system; };
-        ratpac = ratpac-nix.packages.${system}.ratpac-two;
+        pkgs = import nixpkgs {
+          inherit system;
+          overlays = [
+            (final: prev: {
+              ratpac-two = ratpac-nix.packages.${system}.ratpac-two.overrideAttrs (old: {
+                patches = (old.patches or []) ++ [
+                  ./nix/patches/liquido-ratpac.patch
+                ];
+              });
+            })
+          ];
+        };
+        ratpac = pkgs.ratpac-two;
       in {
         devShells.default = pkgs.mkShell {
           inputsFrom = [ ratpac ];
