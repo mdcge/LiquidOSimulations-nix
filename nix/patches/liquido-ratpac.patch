@@ -1,0 +1,194 @@
+diff --git a/src/ds/include/RAT/DS/MCNestedTube.hh b/src/ds/include/RAT/DS/MCNestedTube.hh
+index d738b0d..50a95bd 100644
+--- a/src/ds/include/RAT/DS/MCNestedTube.hh
++++ b/src/ds/include/RAT/DS/MCNestedTube.hh
+@@ -26,6 +26,10 @@ class MCNestedTube : public TObject {
+   virtual Int_t GetID() const { return id; };
+   virtual void SetID(Int_t _id) { id = _id; };
+ 
++  /** Readout number */
++  virtual std::vector<Int_t> GetReadoutChNums() const { return readout_ch_nums; }
++  virtual void SetReadoutChNums(Int_t _val1, Int_t _val2) { readout_ch_nums[0] = _val1; readout_ch_nums[1] = _val2; };
++
+   /** List of photons captured in this NestedTube. */
+   MCNestedTubeHit *GetMCNestedTubeHit(Int_t i) { return &photon[i]; }
+   Int_t GetMCNestedTubeHitCount() const { return photon.size(); }
+@@ -41,6 +45,7 @@ class MCNestedTube : public TObject {
+ 
+  protected:
+   Int_t id;
++  std::vector<Int_t> readout_ch_nums = {0, 0};
+   Int_t type;
+   std::vector<MCNestedTubeHit> photon;
+ };
+diff --git a/src/ds/include/RAT/DS/MCNestedTubeHit.hh b/src/ds/include/RAT/DS/MCNestedTubeHit.hh
+index e48f196..d92441c 100644
+--- a/src/ds/include/RAT/DS/MCNestedTubeHit.hh
++++ b/src/ds/include/RAT/DS/MCNestedTubeHit.hh
+@@ -34,6 +34,10 @@ class MCNestedTubeHit : public TObject {
+   virtual void SetHitID(Int_t _hitID) { hitID = _hitID; }
+   virtual Int_t GetHitID() const { return hitID; }
+ 
++  /** process that created the photon */
++  virtual void SetCreatorProcess(std::string _process) { process = _process; }
++  virtual std::string GetCreatorProcess() const { return process; }
++
+   /** Operator overload **/
+   bool operator<(const MCNestedTubeHit &mcp) const { return (hitTime < mcp.hitTime); }
+   bool operator>(const MCNestedTubeHit &mcp) const { return (hitTime > mcp.hitTime); }
+@@ -43,7 +47,7 @@ class MCNestedTubeHit : public TObject {
+  protected:
+   Double_t hitTime;
+   TVector3 pos;
+-
++  std::string process;
+   Int_t hitID;
+   Int_t fiberID;
+ };
+diff --git a/src/ds/include/RAT/DS/PMTInfo.hh b/src/ds/include/RAT/DS/PMTInfo.hh
+index 9dbdbe5..45ed190 100644
+--- a/src/ds/include/RAT/DS/PMTInfo.hh
++++ b/src/ds/include/RAT/DS/PMTInfo.hh
+@@ -13,6 +13,8 @@
+ 
+ #include <algorithm>
+ 
++#include <RAT/Log.hh>
++
+ namespace RAT {
+ namespace DS {
+ 
+@@ -55,5 +57,21 @@ class PMTInfo : public TObject {
+   virtual int GetChannelNumber(int id) const { return channel_num.at(id); }
+   virtual void SetChannelNumber(int id, int _ch) { channel_num.at(id) = _ch; }
+ 
++  virtual int GetIndexFromChannelNumber(int _ch) const {
++    std::vector<int> indices;
++    for (size_t i = 0; i < channel_num.size(); ++i) {
++      if (channel_num.at(i) == _ch) {
++        indices.push_back(i);
++      }
++    }
++    if (indices.size() == 0) {
++      RAT::warn << "PMTInfo: No PMTs with channel number " << std::to_string(_ch) << " found." << newline;
++      return -1;
++    } else if (indices.size() > 1) {
++      RAT::warn << "PMTInfo: Multiple PMTs with channel number " << std::to_string(_ch) << " found." << newline;
++    }
++    return indices.at(0);
++  }
++
+   virtual int GetType(int id) const { return type.at(id); }
+   virtual void SetType(int id, int _type) { type.at(id) = _type; }
+diff --git a/src/core/src/Gsim.cc b/src/core/src/Gsim.cc
+index 6229cc1..4afd8d2 100644
+--- a/src/core/src/Gsim.cc
++++ b/src/core/src/Gsim.cc
+@@ -37,7 +37,7 @@
+ #include <RAT/ProcBlock.hh>
+ #include <RAT/ReacIBDgen.hh>
+ #include <RAT/RooTracker_Gen.hh>
+-#include <RAT/SNgen.hh>
++//#include <RAT/SNgen.hh>
+ #include <RAT/SignalHandler.hh>
+ #include <RAT/StackingAction.hh>
+ #include <RAT/TimeUtil.hh>
+@@ -52,7 +52,7 @@
+ #include <RAT/VertexGen_IBD.hh>
+ #include <RAT/VertexGen_Isotope.hh>
+ #include <RAT/VertexGen_ReacIBD.hh>
+-#include <RAT/VertexGen_SN.hh>
++//#include <RAT/VertexGen_SN.hh>
+ #include <RAT/VertexGen_Spectrum.hh>
+ #include <Randomize.hh>
+ #include <cstdlib>
+@@ -114,7 +114,7 @@ void Gsim::Init() {
+   GlobalFactory<GLG4VertexGen>::Register("cc", new Alloc<GLG4VertexGen, VertexGen_CC>);
+   GlobalFactory<GLG4VertexGen>::Register("decay0", new Alloc<GLG4VertexGen, VertexGen_Decay0>);
+   GlobalFactory<GLG4VertexGen>::Register("spectrum", new Alloc<GLG4VertexGen, VertexGen_Spectrum>);
+-  GlobalFactory<GLG4VertexGen>::Register("supernova", new Alloc<GLG4VertexGen, VertexGen_SN>);
++  //GlobalFactory<GLG4VertexGen>::Register("supernova", new Alloc<GLG4VertexGen, VertexGen_SN>);
+   GlobalFactory<GLG4VertexGen>::Register("isotope", new Alloc<GLG4VertexGen, VertexGen_Isotope>);
+   GlobalFactory<GLG4VertexGen>::Register("fastneutron", new Alloc<GLG4VertexGen, VertexGen_FastNeutron>);
+ #if CRY_Enabled
+@@ -585,9 +585,12 @@ void Gsim::MakeEvent(const G4Event *g4ev, DS::Root *ds) {
+     if (hit_collection->GetName() != "FiberSenDet" || hit_collection->GetSize() == 0) continue;
+     DS::MCNestedTube *rat_mcnt = mc->AddNewMCNestedTube();
+     G4String det_name = hit_collection->GetSDname();
++    GeoFiberSensitiveDetectorHit *hit0 = (GeoFiberSensitiveDetectorHit *)hit_collection->GetHit(0);
++    std::vector<G4int> readout_ch_nums = hit0->GetReadoutChNums();
+     std::string fibre_id_str = det_name.erase(0, 6).data();
+     int fibre_id = std::stoi(fibre_id_str);
+     rat_mcnt->SetID(fibre_id);
++    rat_mcnt->SetReadoutChNums(readout_ch_nums[0], readout_ch_nums[1]);
+     // only process fibers
+     // info << hit_collection->GetSDname() << newline;
+     for (size_t hit = 0; hit < hit_collection->GetSize(); hit++) {
+@@ -637,6 +640,8 @@ void Gsim::AddMCNestedTubeHit(DS::MCNestedTube *rat_mcnt, const GeoFiberSensitiv
+ 
+   rat_mchit->SetHitID(hit->GetID());
+   rat_mchit->SetHitTime(hit->GetTime());
++
++  rat_mchit->SetCreatorProcess(hit->GetProc());
+ }
+ 
+ void Gsim::SetStoreParticleTraj(const G4String &particleName, const bool &gDoStore) {
+diff --git a/src/geo/include/RAT/GeoFiberSensitiveDetectorHit.hh b/src/geo/include/RAT/GeoFiberSensitiveDetectorHit.hh
+index 0c9a344..d14c692 100644
+--- a/src/geo/include/RAT/GeoFiberSensitiveDetectorHit.hh
++++ b/src/geo/include/RAT/GeoFiberSensitiveDetectorHit.hh
+@@ -13,7 +13,8 @@ namespace RAT {
+ 
+ class GeoFiberSensitiveDetectorHit : public G4VHit {
+  public:
+-  GeoFiberSensitiveDetectorHit(G4int i, G4double t, G4ThreeVector p);
++  GeoFiberSensitiveDetectorHit(G4int i, G4double t, G4ThreeVector pos);
++  // GeoFiberSensitiveDetectorHit(G4int i, G4double t);
+   virtual ~GeoFiberSensitiveDetectorHit();
+   GeoFiberSensitiveDetectorHit(const GeoFiberSensitiveDetectorHit &right);
+   const GeoFiberSensitiveDetectorHit &operator=(const GeoFiberSensitiveDetectorHit &right);
+@@ -33,9 +34,12 @@ class GeoFiberSensitiveDetectorHit : public G4VHit {
+   G4RotationMatrix rot;
+   const G4LogicalVolume *pLogV;
+   std::string proc;
++  std::vector<G4int> readout_ch_nums = {0, 0};
+ 
+  public:
+   inline G4int GetID() const { return id; }
++  inline std::vector<G4int> GetReadoutChNums() const { return readout_ch_nums; }
++  inline void SetReadoutChNums(G4int val1, G4int val2) { readout_ch_nums[0] = val1; readout_ch_nums[1] = val2; }
+   inline G4double GetTime() const { return time; }
+   inline void SetTime(G4double val) { time = val; }
+   inline void SetPos(G4ThreeVector xyz) { pos = xyz; }
+@@ -46,6 +50,8 @@ class GeoFiberSensitiveDetectorHit : public G4VHit {
+   inline G4RotationMatrix GetRot() const { return rot; }
+   inline void SetLogV(G4LogicalVolume *val) { pLogV = val; }
+   inline const G4LogicalVolume *GetLogV() const { return pLogV; }
++  inline void SetProc(std::string val) { proc = val; }
++  inline const std::string GetProc() const { return proc; }
+ };
+ 
+ typedef G4THitsCollection<GeoFiberSensitiveDetectorHit> GeoFiberSensitiveDetectorHitsCollection;
+diff --git a/src/ds/include/RAT/DS/DigitPMT.hh b/src/ds/include/RAT/DS/DigitPMT.hh
+index b5d9a20..5b0d28f 100644
+--- a/src/ds/include/RAT/DS/DigitPMT.hh
++++ b/src/ds/include/RAT/DS/DigitPMT.hh
+@@ -40,6 +40,10 @@ class DigitPMT : public TObject {
+   virtual void SetDigitizedCharge(Double_t _dCharge) { this->dCharge = _dCharge; }
+   virtual Double_t GetDigitizedCharge() { return dCharge; }
+ 
++  /** Non-linear charge response */
++  virtual void SetNonLinearCharge(Double_t _dNonLinearCharge) { this->dNonLinearCharge = _dNonLinearCharge; }
++  virtual Double_t GetNonLinearCharge() { return dNonLinearCharge; }
++
+   /** Integrated total charge [pC] */
+   virtual void SetDigitizedTotalCharge(Double_t _dTCharge) { this->dTCharge = _dTCharge; }
+   virtual Double_t GetDigitizedTotalCharge() { return dTCharge; }
+@@ -133,6 +137,7 @@ class DigitPMT : public TObject {
+   Int_t id = -9999;
+   Double_t dTime = -9999;
+   Double_t dCharge = -9999;
++  Double_t dNonLinearCharge = -9999;
+   Double_t dTCharge = -9999;
+   Int_t nCrossings = -9999;
+   Double_t timeOverThresh = -9999;
