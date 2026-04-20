@@ -12,7 +12,7 @@
         ratpac = ratpac-nix.packages.${system}.ratpac-two;
       in {
         devShells.default = pkgs.mkShell {
-          inputsFrom = [ ratpac-nix.packages.${system}.ratpac-two ];
+          inputsFrom = [ ratpac ];
           packages = [ ratpac pkgs.cmake pkgs.pkg-config ];
           shellHook = ''
             export CMAKE_PREFIX_PATH=${ratpac}:${pkgs.root}:$CMAKE_PREFIX_PATH
