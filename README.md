@@ -25,6 +25,8 @@ To enter the environment with the necessary programs available, simply run
 nix develop
 ```
 
+In this instance, you can check this has worked by running `rat`.
+
 ### Automating with `direnv`
 This process can be automated (among other advantages) using `direnv`. To use this,
 
