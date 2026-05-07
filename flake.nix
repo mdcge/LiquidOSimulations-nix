@@ -2,25 +2,14 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     flake-utils.url = "github:numtide/flake-utils";
-    ratpac-nix.url = "github:mdcge/ratpac-nix";
+    liquido-nix.url = "github:mdcge/liquido-nix";
   };
 
-  outputs = { self, nixpkgs, flake-utils, ratpac-nix, ... }:
+  outputs = { self, nixpkgs, flake-utils, liquido-nix, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        pkgs = import nixpkgs {
-          inherit system;
-          overlays = [
-            (final: prev: {
-              ratpac-two = ratpac-nix.packages.${system}.ratpac-two.overrideAttrs (old: {
-                patches = (old.patches or []) ++ [
-                  ./nix/patches/liquido-ratpac.patch
-                ];
-              });
-            })
-          ];
-        };
-        ratpac = pkgs.ratpac-two;
+        pkgs = import nixpkgs { inherit system; };
+        ratpac = liquido-nix.packages.${system}.liquido-ratpac;
       in {
         devShells.default = pkgs.mkShell {
           inputsFrom = [ ratpac ];

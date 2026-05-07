@@ -52,7 +52,43 @@
         "type": "github"
       }
     },
+    "liquido-nix": {
+      "inputs": {
+        "flake-compat": "flake-compat",
+        "flake-utils": "flake-utils_2",
+        "nixpkgs": "nixpkgs"
+      },
+      "locked": {
+        "lastModified": 1777923250,
+        "narHash": "sha256-uirnaoJcIZ9pOnsjPkWAU4qeciS9tpN+3URu2le7fvI=",
+        "owner": "mdcge",
+        "repo": "liquido-nix",
+        "rev": "7ee5dcfd3a040490ad634c5c8bf1ce4c51e2729b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "mdcge",
+        "repo": "liquido-nix",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
+      "locked": {
+        "lastModified": 1777077449,
+        "narHash": "sha256-AIiMJiqvGrN4HyLEbKAoCSRRYn0rnlW5VbKNIMIYqm4=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "a4bf06618f0b5ee50f14ed8f0da77d34ecc19160",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "nixos-25.11",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_2": {
       "locked": {
         "lastModified": 1776434932,
         "narHash": "sha256-gyqXNMgk3sh+ogY5svd2eNLJ6oEwzbAeaoBrrxD0lKk=",
@@ -68,47 +104,11 @@
         "type": "github"
       }
     },
-    "nixpkgs_2": {
-      "locked": {
-        "lastModified": 1776221942,
-        "narHash": "sha256-FbQAeVNi7G4v3QCSThrSAAvzQTmrmyDLiHNPvTF2qFM=",
-        "owner": "nixos",
-        "repo": "nixpkgs",
-        "rev": "1766437c5509f444c1b15331e82b8b6a9b967000",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nixos",
-        "ref": "nixos-25.11",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
-    "ratpac-nix": {
-      "inputs": {
-        "flake-compat": "flake-compat",
-        "flake-utils": "flake-utils_2",
-        "nixpkgs": "nixpkgs_2"
-      },
-      "locked": {
-        "lastModified": 1776518629,
-        "narHash": "sha256-gWfp+Gd1p+OshQVZIort45gwrmRRnA/tbR0PVHQtsWc=",
-        "owner": "mdcge",
-        "repo": "ratpac-nix",
-        "rev": "881c0a6ecf14857f8ce4e90975172803a4f319ab",
-        "type": "github"
-      },
-      "original": {
-        "owner": "mdcge",
-        "repo": "ratpac-nix",
-        "type": "github"
-      }
-    },
     "root": {
       "inputs": {
         "flake-utils": "flake-utils",
-        "nixpkgs": "nixpkgs",
-        "ratpac-nix": "ratpac-nix"
+        "liquido-nix": "liquido-nix",
+        "nixpkgs": "nixpkgs_2"
       }
     },
     "systems": {
