@@ -1,9 +1,10 @@
 # LiquidOSimulations Nix environment
+This repository contains the necessary files to create a Nix environment with LiquidO's fork of ratpac-two. This environment can be used to build LiquidOSimulations.
 
 ## Installing Nix
-Note: Determinate Nix is not supported for `x86_64-darwin` (Intel Mac).
+Note: Determinate Nix is not supported for `x86_64-darwin` (Intel Mac). You will have to go through the official installer for that architecture.
 
-To install Nix, follow the [installation instructions](https://determinate.systems/blog/determinate-nix-installer/).
+In order to use this repo, you must install [Nix](https://nixos.org/). This is possible via the official Nix channels, but a slightly more streamlined and ergonomic approach is to use [Determinate Nix](https://docs.determinate.systems/determinate-nix/).
 
 In short, to install Nix, run the command
 
