@@ -61,3 +61,24 @@ make
 cd ..
 source liquido.sh
 ```
+
+## Creating container images
+One of the many benefits of Nix is the ability to easily create container images, using the pre-existing Nix configuration files. Natively, Nix supports Docker images which can be created as follows (with Docker installed):
+
+``` zsh
+nix build ./docker#dockerImage && docker load < result
+```
+
+Then push to the GitHub registry:
+
+``` zsh
+docker tag <image-name> ghcr.io/<repo-name>/<image-name>
+docker push ghcr.io/<repo-name>/<image-name>
+```
+
+## Using container images
+In order to use a docker image in the GitHub registry, either find it in the "Packages" section of the target repository, or run:
+
+``` zsh
+docker pull ghcr.io/<repo-name>/<image-name>
+```
