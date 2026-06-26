@@ -4,12 +4,12 @@ This repository contains the necessary files to create a Nix environment with Li
 ## Installing Nix
 Note: Determinate Nix is not supported for `x86_64-darwin` (Intel Mac). You will have to go through the official installer for that architecture.
 
-In order to use this repo, you must install [Nix](https://nixos.org/). This is possible via the official Nix channels, but a slightly more streamlined and ergonomic approach is to use [Determinate Nix](https://docs.determinate.systems/determinate-nix/).
+In order to use this repo, you must install [Nix](https://nixos.org/). This is possible via the official Nix channels, but a slightly more streamlined and ergonomic approach is to use [Determinate Nix](https://docs.determinate.systems/determinate-nix/) (link to detailed [GitHub page](https://github.com/DeterminateSystems/nix-installer)).
 
 In short, to install Nix, run the command
 
 ``` zsh
-curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+curl -fsSL https://install.determinate.systems/nix | sh -s -- install
 ```
 
 and to uninstall run
@@ -26,6 +26,8 @@ nix develop
 ```
 
 In this instance, you can check this has worked by running `rat`.
+
+This environment is active for the duration of the shell session, so you can freely navigate your file system while still having access to these commands. You will need to re-`develop` when opening a new shell.
 
 ### Automating with `direnv`
 This process can be automated (among other advantages) using `direnv`. To use this,
