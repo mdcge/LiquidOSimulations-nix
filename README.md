@@ -57,8 +57,6 @@ git clone https://gitlab.in2p3.fr/liquid-o/liquido-general/LiquidOSimulations.gi
 Then, in the `LiquidOSimulations` directory, build:
 
 ``` zsh
-mkdir build && cd build
-cmake ..
 make
 cd ..
 source liquido.sh
