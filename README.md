@@ -57,8 +57,7 @@ git clone https://gitlab.in2p3.fr/liquid-o/liquido-general/LiquidOSimulations.gi
 Then, in the `LiquidOSimulations` directory, build:
 
 ``` zsh
-make
-cd ..
+make -j<nb of cores>
 source liquido.sh
 ```
 
@@ -72,13 +71,13 @@ nix build ./docker#dockerImage && docker load < result
 Then push to the GitHub registry:
 
 ``` zsh
-docker tag <image-name> ghcr.io/<repo-name>/<image-name>
-docker push ghcr.io/<repo-name>/<image-name>
+docker tag <image-name> ghcr.io/<repo-name>/<image-name>:<version>
+docker push ghcr.io/<repo-name>/<image-name>:<version>
 ```
 
 ## Using container images
 In order to use a docker image in the GitHub registry, either find it in the "Packages" section of the target repository, or run:
 
 ``` zsh
-docker pull ghcr.io/<repo-name>/<image-name>
+docker pull ghcr.io/<repo-name>/<image-name>:<version>
 ```
