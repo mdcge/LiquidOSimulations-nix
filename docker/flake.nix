@@ -1,10 +1,12 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
     flake-utils.url = "github:numtide/flake-utils";
     liquido-nix.url = "github:mdcge/liquido-nix";
+    # Reference base flake in GitHub (helps with Actions)
+    root.url = "github:mdcge/LiquidOSimulations-nix";
     # Reference base flake in parent directory
-    root.url = "path:../";
+    # root.url = "path:../";
   };
 
   outputs = { self, nixpkgs, flake-utils, liquido-nix, root, ... }:
