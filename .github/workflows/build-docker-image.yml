@@ -1,0 +1,73 @@
+name: Build and publish docker images
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag (e.g. v26-09)'
+        required: true
+        default: 'latest'
+
+env:
+  IMAGE: ghcr.io/liquid-o/liquido-simulations
+
+jobs:
+  build-amd64:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: cachix/install-nix-action@v27
+      - run: nix build ./docker#packages.x86_64-linux.dockerImage -L -o result-amd64
+      - uses: actions/upload-artifact@v4
+        with:
+          name: image-amd64
+          path: result-amd64
+
+  build-arm64:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: cachix/install-nix-action@v27
+      - run: nix build ./docker#packages.aarch64-linux.dockerImage -L -o result-arm64
+      - uses: actions/upload-artifact@v4
+        with:
+          name: image-arm64
+          path: result-arm64
+
+  push-manifest:
+    needs: [build-amd64, build-arm64]
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { name: image-amd64, path: . }
+      - uses: actions/download-artifact@v4
+        with: { name: image-arm64, path: . }
+
+      - run: echo "${{ secrets.GHCR_ORG_TOKEN }}" | docker login ghcr.io -u mdcge --password-stdin
+
+      - name: Load and push each arch
+        run: |
+          docker load < result-amd64
+          docker tag liquido-simulations:latest $IMAGE:${{ github.event.inputs.version }}-amd64
+          docker push $IMAGE:${{ github.event.inputs.version }}-amd64
+
+          docker load < result-arm64
+          docker tag liquido-simulations:latest $IMAGE:${{ github.event.inputs.version }}-arm64
+          docker push $IMAGE:${{ github.event.inputs.version }}-arm64
+
+      - name: Create and push manifest list
+        run: |
+          docker manifest create $IMAGE:${{ github.event.inputs.version }} \
+            --amend $IMAGE:${{ github.event.inputs.version }}-amd64 \
+            --amend $IMAGE:${{ github.event.inputs.version }}-arm64
+          docker manifest push $IMAGE:${{ github.event.inputs.version }}
+
+          docker manifest create $IMAGE:latest \
+            --amend $IMAGE:${{ github.event.inputs.version }}-amd64 \
+            --amend $IMAGE:${{ github.event.inputs.version }}-arm64
+          docker manifest push $IMAGE:latest
