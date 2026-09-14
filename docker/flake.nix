@@ -69,7 +69,7 @@
             Env = [
               "CMAKE_PREFIX_PATH=${ratpac}:${pkgs.root}"
               "LD_LIBRARY_PATH=${pkgs.lib.makeLibraryPath imagePackages}"
-              "PATH=/bin:/usr/bin"
+              "PATH=/bin"
             ];
             Cmd = [ "${pkgs.bash}/bin/bash" ];
             WorkingDir = "/work";
