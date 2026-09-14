@@ -14,6 +14,7 @@
       let
         pkgs = import nixpkgs { inherit system; };
         ratpac = liquido-nix.packages.${system}.liquido-ratpac;
+        ratpacDeps = ratpac.buildInputs ++ (ratpac.propagatedBuildInputs or []);
 
         imagePackages = [
           ratpac
@@ -29,7 +30,7 @@
           pkgs.gnugrep
           pkgs.gnused
           pkgs.which
-        ];
+        ] ++ ratpacDeps;
       in {
         # local dev shell, unchanged
         devShells.default = pkgs.mkShell {
@@ -67,7 +68,7 @@
 
           config = {
             Env = [
-              "CMAKE_PREFIX_PATH=${ratpac}:${pkgs.root}"
+              "CMAKE_PREFIX_PATH=${pkgs.lib.concatStringsSep ":" ([ "${ratpac}" "${pkgs.root}" ] ++ (map (p: "${p}") ratpacDeps))}"
               "LD_LIBRARY_PATH=${pkgs.lib.makeLibraryPath imagePackages}"
               "PATH=/bin"
             ];
