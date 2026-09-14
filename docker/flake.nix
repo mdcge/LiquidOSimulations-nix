@@ -14,8 +14,12 @@
       let
         pkgs = import nixpkgs { inherit system; };
         ratpac = liquido-nix.packages.${system}.liquido-ratpac;
-        ratpacDeps = ratpac.buildInputs ++ (ratpac.propagatedBuildInputs or []);
-
+        ratpacDeps = pkgs.lib.unique (
+          pkgs.lib.concatMap
+            (p: [ p ] ++ (p.buildInputs or []) ++ (p.propagatedBuildInputs or []))
+            (ratpac.buildInputs ++ (ratpac.propagatedBuildInputs or []))
+        );
+        
         imagePackages = [
           ratpac
           pkgs.root          # HEP ROOT — needed at runtime and for CMake
