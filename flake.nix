@@ -15,10 +15,10 @@
           inputsFrom = [ ratpac ];
           packages = [ ratpac pkgs.cmake pkgs.pkg-config ];
           shellHook = ''
-            export CMAKE_PREFIX_PATH=${ratpac}:${pkgs.root}:$CMAKE_PREFIX_PATH
+          export CMAKE_PREFIX_PATH=${ratpac}:${pkgs.root}:$CMAKE_PREFIX_PATH
           '' + pkgs.lib.optionalString pkgs.stdenv.isDarwin ''
-            export SDKROOT="$(echo $NIX_CFLAGS_COMPILE | tr ' ' '\n' | grep -A1 -- -isysroot | tail -1)"
-            export CMAKE_OSX_SYSROOT="$SDKROOT"
+          export SDKROOT="''${SDKROOT:-${pkgs.apple-sdk}/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk}"
+          export CMAKE_OSX_SYSROOT="$SDKROOT"
           '';
         };
       });

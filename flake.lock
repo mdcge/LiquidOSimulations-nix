@@ -59,11 +59,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1788858015,
-        "narHash": "sha256-Hinv/03AJpxzSv9bNwwc198f0VOFgfP5TpYznF+kCqQ=",
+        "lastModified": 1789553442,
+        "narHash": "sha256-r48dszqtJUmU9iZxzyH+Zbf5/t1vn9GGG7vLZiTgJ5Y=",
         "owner": "mdcge",
         "repo": "liquido-nix",
-        "rev": "f48e8f1257706512f18971e2f3487feb450cb032",
+        "rev": "555aa6974006f44d026ff878b4bcfe24ba3094c7",
         "type": "github"
       },
       "original": {
