@@ -45,11 +45,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1790594321,
-        "narHash": "sha256-NChLgb7DnBCFiwkYjpcu2Y63fFrSsSgizAbN+goj7aU=",
+        "lastModified": 1790770836,
+        "narHash": "sha256-IST1nqwXJV90KEAzxi8JydSaIaGtYlRe9LyWeS6+nME=",
         "owner": "mdcge",
         "repo": "liquido-nix",
-        "rev": "baf723ec912549c8965bdd31715e26188840eed9",
+        "rev": "b8dd48a0f64eb14a14b29177bdf3ecc3e37244e4",
         "type": "github"
       },
       "original": {
