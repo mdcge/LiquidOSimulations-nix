@@ -2,7 +2,11 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
     flake-utils.url = "github:numtide/flake-utils";
-    liquido-nix.url = "github:mdcge/liquido-nix";
+    liquido-nix = {
+      url = "github:mdcge/liquido-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-utils.follows = "flake-utils";
+    };
   };
 
   outputs = { self, nixpkgs, flake-utils, liquido-nix, ... }:
@@ -15,7 +19,7 @@
           inputsFrom = [ ratpac ];
           packages = [ ratpac pkgs.cmake pkgs.pkg-config ];
           shellHook = ''
-          export CMAKE_PREFIX_PATH=${ratpac}:${pkgs.root}:$CMAKE_PREFIX_PATH
+          export CMAKE_PREFIX_PATH=${ratpac}:$CMAKE_PREFIX_PATH
           '' + pkgs.lib.optionalString pkgs.stdenv.isDarwin ''
           export SDKROOT="''${SDKROOT:-${pkgs.apple-sdk}/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk}"
           export CMAKE_OSX_SYSROOT="$SDKROOT"
